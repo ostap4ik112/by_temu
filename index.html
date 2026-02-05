@@ -2,8 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>System Crash</title>
-
+<title>System Chaos</title>
 <style>
 body{
   margin:0;
@@ -12,21 +11,6 @@ body{
   font-family:monospace;
   color:#0f0;
 }
-
-/* тряска */
-@keyframes shake {
-  0%{transform:translate(0,0)}
-  25%{transform:translate(-6px,6px)}
-  50%{transform:translate(6px,-6px)}
-  75%{transform:translate(-6px,-6px)}
-  100%{transform:translate(0,0)}
-}
-
-body.chaos{
-  animation: shake 0.07s infinite;
-}
-
-/* центр */
 #main{
   position:absolute;
   top:50%;
@@ -36,14 +20,13 @@ body.chaos{
   text-align:center;
   color:red;
   text-shadow:3px 3px cyan,-3px -3px magenta;
+  cursor:pointer;
 }
-
 .msg{
   position:absolute;
   font-size:12px;
   pointer-events:none;
 }
-
 .square{
   position:absolute;
   width:20px;
@@ -53,137 +36,98 @@ body.chaos{
 }
 </style>
 </head>
-
 <body>
-
 <div id="main">TAP TO START</div>
 
 <script>
-
 let started=false;
 let ctx;
 
-// запуск по нажатию (иначе звук не разрешат)
-document.body.onclick = () => {
+// старт хаоса по нажатию
+document.getElementById("main").onclick = () => {
   if(started) return;
   started=true;
 
+  // инициализация аудио
   ctx = new (window.AudioContext || window.webkitAudioContext)();
 
-  document.body.classList.add("chaos");
+  // убираем текст TAP
+  document.getElementById("main").innerText="SYSTEM FAILURE";
+
   startChaos();
 };
 
-
-// ===== хаос =====
 function startChaos(){
 
-  document.getElementById("main").innerText="SYSTEM FAILURE";
-
-  // вибрация
+  // ВИБРАЦИЯ
   if(navigator.vibrate){
     setInterval(()=>navigator.vibrate(200),300);
   }
 
-  // звук писка
+  // Писк
   setInterval(()=>{
-    const o = ctx.createOscillator();
-    const g = ctx.createGain();
-    o.connect(g);
-    g.connect(ctx.destination);
-
+    const o=ctx.createOscillator();
+    const g=ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
     o.frequency.value = 500 + Math.random()*2500;
     g.gain.value = 0.05;
-
     o.start();
     setTimeout(()=>o.stop(),60);
   },80);
 
-  // текстовые ошибки
+  // Фейковые сообщения
   const texts=[
-    "ERROR 0x000F",
-    "MEMORY LOST",
-    "HACKED",
-    "DATA CORRUPTED",
-    "SYSTEM BREACH",
-    "ACCESS DENIED",
-    "DOWNLOADING VIRUS...",
-    "SENDING DATA...",
-    "CAMERA ENABLED",
-    "MIC ENABLED"
+    "ERROR 0x000F","MEMORY LOST","HACKED",
+    "DATA CORRUPTED","ACCESS DENIED",
+    "DOWNLOADING VIRUS...","CAMERA ENABLED"
   ];
-
   setInterval(()=>{
     const m=document.createElement("div");
     m.className="msg";
     m.innerText=texts[Math.floor(Math.random()*texts.length)];
-
     m.style.left=Math.random()*100+"vw";
     m.style.top=Math.random()*100+"vh";
     m.style.color=hsl(${Math.random()*360},100%,50%);
-
     document.body.appendChild(m);
     setTimeout(()=>m.remove(),900);
   },40);
 
-
-  // летающие квадраты (типа глитч)
+  // Летающие квадраты
   setInterval(()=>{
     const s=document.createElement("div");
     s.className="square";
-
     let x=Math.random()*innerWidth;
     let y=Math.random()*innerHeight;
-
-    s.style.left=x+"px";
-    s.style.top=y+"px";
-
+    s.style.left=x+"px"; s.style.top=y+"px";
     document.body.appendChild(s);
-
     const dx=(Math.random()-0.5)*30;
     const dy=(Math.random()-0.5)*30;
-
     const move=setInterval(()=>{
-      x+=dx;
-      y+=dy;
-      s.style.left=x+"px";
-      s.style.top=y+"px";
+      x+=dx; y+=dy; s.style.left=x+"px"; s.style.top=y+"px";
     },20);
-
     setTimeout(()=>{
-      clearInterval(move);
-      s.remove();
+      clearInterval(move); s.remove();
     },800);
-
   },60);
 
-
-  // меняем большой текст
+  // Меняем большой текст
   const big=[
-    "SYSTEM FAILURE",
-    "DEVICE INFECTED",
-    "FILES DELETED",
-    "TRACKING ENABLED",
-    "GOODBYE :)"
+    "SYSTEM FAILURE","DEVICE INFECTED",
+    "FILES DELETED","TRACKING ENABLED","GOODBYE :)"
   ];
-
   setInterval(()=>{
     document.getElementById("main").innerText=
       big[Math.floor(Math.random()*big.length)];
   },200);
 
-
-  // финал
+  // Финал пранка
   setTimeout(()=>{
-    document.body.classList.remove("chaos");
     document.body.innerHTML=
-    <div style="color:white;text-align:center;margin-top:40vh;font-size:28px">
-    взлом жопы от кішки не удался😬😬
-    </div>;
+      <div style="color:white;text-align:center;margin-top:40vh;font-size:28px">
+      😄 Это просто пранк<br>Ничего не сломалось
+      </div>;
   },8000);
 }
-
 </script>
-
 </body>
 </html>
